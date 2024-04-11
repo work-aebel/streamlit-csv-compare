@@ -133,7 +133,7 @@ def main():
     text_input1 = st.sidebar.text_input("Input Initial for CSV A", value="A")
 
     csv_b = st.sidebar.file_uploader("Upload CSV B", type=["csv"])
-    text_input2 = st.sidebar.text_input("Input Initial for CSV A", value="B")
+    text_input2 = st.sidebar.text_input("Input Initial for CSV B", value="B")
 
     if csv_a is not None and csv_b is not None:
         validation_result, validation_message = validate_csvs(csv_a, csv_b)
