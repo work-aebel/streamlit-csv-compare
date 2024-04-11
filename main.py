@@ -128,7 +128,7 @@ def download_excel_file(file_path, file_label):
 
 
 def main():
-    st.title("Compare CSVs Tool")
+    st.title("CSV Compare Tool")
 
     st.sidebar.title("Upload CSV Files")
     csv_a = st.sidebar.file_uploader("Upload CSV 1", type=["csv"])
