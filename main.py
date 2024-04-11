@@ -61,9 +61,15 @@ def compare_csvs(csv_a, csv_b):
     
     return non_matched_uid_fields, non_matched_uids, matched_uids, df1, df2
 
-def nonmatching(non_matched_uids,non_matched_uid_fields,df1,df2):
+def nonmatching(non_matched_uids,non_matched_uid_fields,df1,df2,csv_b_source,csv_a_source,text_input1,text_input2):
     filtered_df1 = df1[df1['UID'].isin(non_matched_uids)]
     filtered_df2 = df2[df2['UID'].isin(non_matched_uids)]
+
+    filtered_df1.insert(0,'Source',csv_a_source)
+    filtered_df2.insert(0,'Source',csv_b_source)
+    filtered_df1.insert(0,'Inital',text_input1)
+    filtered_df2.insert(0,'Inital',text_input2)
+
     concatenated_df = pd.concat([filtered_df1, filtered_df2], ignore_index=True)
     ordered_df = concatenated_df.sort_values(by='UID')
     ordered_df = ordered_df.reset_index(drop=True)
@@ -95,7 +101,7 @@ def nonmatching(non_matched_uids,non_matched_uid_fields,df1,df2):
             for value in v:
                 worksheet.write(tmp_index, column_index, value, highlight_format)
                 tmp_index += 1
-    writer._save()
+    writer.save()
 
 
 def download_csv(data):
@@ -120,16 +126,24 @@ def download_excel_file(file_path, file_label):
 
 
 def main():
-    st.title("Comparison Tool")
+    st.title("Compare CSVs Tool")
 
     st.sidebar.title("Upload CSV Files")
     csv_a = st.sidebar.file_uploader("Upload CSV A", type=["csv"])
+    text_input1 = st.sidebar.text_input("Input Initial for CSV A", value="A")
+
     csv_b = st.sidebar.file_uploader("Upload CSV B", type=["csv"])
+    text_input2 = st.sidebar.text_input("Input Initial for CSV A", value="B")
 
     if csv_a is not None and csv_b is not None:
         validation_result, validation_message = validate_csvs(csv_a, csv_b)
+        csv_a_source = csv_a.name
+        csv_b_source = csv_b.name
+
         if validation_result:
             st.success("CSVs validated successfully!")
+
+
 
 
             # Button to initiate comparison
@@ -137,7 +151,7 @@ def main():
             matched_df = df1[df1['UID'].isin(matched_uids)]
             #matched_output = matched_df.to_csv('success.csv', index=False)
             matched_output = matched_df.to_csv(index=False).encode()
-            nonmatching(non_matched_uids,non_matched_uid_fields,df1,df2)
+            nonmatching(non_matched_uids,non_matched_uid_fields,df1,df2,csv_b_source,csv_a_source,text_input1,text_input2)
             st.success(f"Comparison complete. Files generated.")
             download_csv(matched_output)
             download_excel_file('errors.xlsx', 'Error Report')
