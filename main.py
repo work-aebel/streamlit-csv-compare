@@ -95,7 +95,7 @@ def nonmatching(non_matched_uids,non_matched_uid_fields,df1,df2):
             for value in v:
                 worksheet.write(tmp_index, column_index, value, highlight_format)
                 tmp_index += 1
-    writer.save()
+    writer._save()
 
 
 def download_csv(data):
