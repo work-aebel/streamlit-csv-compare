@@ -74,6 +74,8 @@ def nonmatching(non_matched_uids,non_matched_uid_fields,df1,df2,csv_b_source,csv
     ordered_df = concatenated_df.sort_values(by='UID')
     ordered_df = ordered_df.reset_index(drop=True)
 
+    move_uid = ordered_df.pop("UID")
+    ordered_df.insert(0,"UID",move_uid)
 
     #print(ordered_df)
 
@@ -129,11 +131,11 @@ def main():
     st.title("Compare CSVs Tool")
 
     st.sidebar.title("Upload CSV Files")
-    csv_a = st.sidebar.file_uploader("Upload CSV A", type=["csv"])
-    text_input1 = st.sidebar.text_input("Input Initial for CSV A", value="A")
+    csv_a = st.sidebar.file_uploader("Upload CSV 1", type=["csv"])
+    text_input1 = st.sidebar.text_input("Transcriber 1 Initials (i.e. AC)", value="AC")
 
-    csv_b = st.sidebar.file_uploader("Upload CSV B", type=["csv"])
-    text_input2 = st.sidebar.text_input("Input Initial for CSV B", value="B")
+    csv_b = st.sidebar.file_uploader("Upload CSV 2", type=["csv"])
+    text_input2 = st.sidebar.text_input("Transcriber 2 Initials (i.e. KL)", value="KL")
 
     if csv_a is not None and csv_b is not None:
         validation_result, validation_message = validate_csvs(csv_a, csv_b)
