@@ -10,10 +10,10 @@ def validate_csvs(csv_a, csv_b):
     df_a = pd.read_csv(csv_a)
     df_b = pd.read_csv(csv_b)
 
-    st.subheader("Preview of CSV A:")
+    st.subheader("Preview of CSV 1:")
     st.write(df_a.head(4))
 
-    st.subheader("Preview of CSV B:")
+    st.subheader("Preview of CSV 2:")
     st.write(df_b.head(4))
 
     if df_a.shape != df_b.shape:
