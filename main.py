@@ -19,8 +19,6 @@ def validate_csvs(csv_a, csv_b):
     if df_a.shape != df_b.shape:
         return False, "Number of rows or columns in CSVs are not the same."
 
-    if 'UID' not in df_a.columns or 'UID' not in df_b.columns:
-        return False, "UID column not found in one or both CSVs."
 
     return True, None
 
@@ -30,6 +28,9 @@ def compare_csvs(csv_a, csv_b):
     df1 = pd.read_csv(csv_a)
     df2 = pd.read_csv(csv_b)
 
+    df1['Row_Numer']  = df1.index + 1
+    df2['Row_Numer']  = df2.index + 1
+
     matched_uids = []
     non_matched_uids = []
     non_matched_uid_fields = {}
@@ -37,8 +38,8 @@ def compare_csvs(csv_a, csv_b):
     for index, row in df1.iterrows():
         print(f"Row index: {index}")
 
-        uuid = row['UID']
-        df2_row = df2[df2['UID'] == uuid]
+        uuid = row['Row_Numer']
+        df2_row = df2[df2['Row_Numer'] == uuid]
 
         matched = True
         for col in df1.columns:
@@ -62,8 +63,8 @@ def compare_csvs(csv_a, csv_b):
     return non_matched_uid_fields, non_matched_uids, matched_uids, df1, df2
 
 def nonmatching(non_matched_uids,non_matched_uid_fields,df1,df2,csv_b_source,csv_a_source,text_input1,text_input2):
-    filtered_df1 = df1[df1['UID'].isin(non_matched_uids)]
-    filtered_df2 = df2[df2['UID'].isin(non_matched_uids)]
+    filtered_df1 = df1[df1['Row_Numer'].isin(non_matched_uids)]
+    filtered_df2 = df2[df2['Row_Numer'].isin(non_matched_uids)]
 
     filtered_df1.insert(0,'Source',csv_a_source)
     filtered_df2.insert(0,'Source',csv_b_source)
@@ -71,11 +72,11 @@ def nonmatching(non_matched_uids,non_matched_uid_fields,df1,df2,csv_b_source,csv
     filtered_df2.insert(0,'Inital',text_input2)
 
     concatenated_df = pd.concat([filtered_df1, filtered_df2], ignore_index=True)
-    ordered_df = concatenated_df.sort_values(by='UID')
+    ordered_df = concatenated_df.sort_values(by='Row_Numer')
     ordered_df = ordered_df.reset_index(drop=True)
 
-    move_uid = ordered_df.pop("UID")
-    ordered_df.insert(0,"UID",move_uid)
+    move_uid = ordered_df.pop("Row_Numer")
+    ordered_df.insert(0,"Row_Numer",move_uid)
 
     #print(ordered_df)
 
@@ -95,7 +96,7 @@ def nonmatching(non_matched_uids,non_matched_uid_fields,df1,df2,csv_b_source,csv
     for index, row in ordered_df.iterrows():
         if index % 2 == 0:
             continue
-        uid = row['UID']
+        uid = row['Row_Numer']
         column_dict = non_matched_uid_fields[uid]
         for col, v in column_dict.items():
             column_index = ordered_df.columns.get_loc(col)
@@ -150,7 +151,7 @@ def main():
 
             # Button to initiate comparison
             non_matched_uid_fields, non_matched_uids, matched_uids, df1, df2  = compare_csvs(csv_a, csv_b) 
-            matched_df = df1[df1['UID'].isin(matched_uids)]
+            matched_df = df1[df1['Row_Numer'].isin(matched_uids)]
             #matched_output = matched_df.to_csv('success.csv', index=False)
             matched_output = matched_df.to_csv(index=False).encode()
             nonmatching(non_matched_uids,non_matched_uid_fields,df1,df2,csv_b_source,csv_a_source,text_input1,text_input2)
