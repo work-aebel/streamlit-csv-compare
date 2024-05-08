@@ -150,7 +150,7 @@ def main():
             # Button to initiate comparison
             non_matched_uid_fields, non_matched_uids, matched_uids, df1, df2  = compare_csvs(csv_a, csv_b) 
             matched_df = df1[df1['Row'].isin(matched_uids)]
-            matched_df.drop('Row',axis1=1)
+            matched_df.drop('Row',axis=1)
             #matched_output = matched_df.to_csv('success.csv', index=False)
             matched_output = matched_df.to_csv(index=False).encode()
             nonmatching(non_matched_uids,non_matched_uid_fields,df1,df2,csv_b_source,csv_a_source,text_input1,text_input2)
