@@ -2,6 +2,24 @@ import streamlit as st
 import pandas as pd
 import xlsxwriter
 
+def compare_headers(df_a,df_b):
+    headers_df1 = set(df_a.columns)
+    headers_df2 = set(df_b.columns)
+    
+    missing_in_df2 = headers_df1 - headers_df2
+    missing_in_df1 = headers_df2 - headers_df1
+    
+    if not missing_in_df2 and not missing_in_df1:
+        return True, ""
+    
+    differences = []
+    if missing_in_df2:
+        differences.append(f"Columns in CSV 1 but not in CSV 2: {', '.join(missing_in_df2)}")
+    if missing_in_df1:
+        differences.append(f"Columns in CSV 2 but not in CSV 1: {', '.join(missing_in_df1)}")
+    
+    return False, "; ".join(differences)
+
 
 def validate_csvs(csv_a, csv_b):
     if csv_a is None or csv_b is None:
@@ -18,6 +36,10 @@ def validate_csvs(csv_a, csv_b):
 
     if df_a.shape != df_b.shape:
         return False, "Number of rows or columns in CSVs are not the same."
+    
+    compr_headers, messages = compare_headers(df_a,df_b)
+    if not compr_headers:
+        return False, messages
 
 
     return True, None
@@ -83,14 +105,13 @@ def nonmatching(non_matched_uids,non_matched_uid_fields,df1,df2,csv_b_source,csv
     #conparedf = (df1.compare(df2))
     #conparedf.to_csv('mycsv.csv')
 
+    
     writer = pd.ExcelWriter('errors.xlsx', engine='xlsxwriter')
     # Convert the DataFrame to an Excel object
     ordered_df.to_excel(writer, sheet_name='Sheet1', index=False)
 
-    # Get the xlsxwriter workbook and worksheet objects
     workbook = writer.book
     worksheet = writer.sheets['Sheet1']
-    # Add a format for highlighted cells
     highlight_format = workbook.add_format({'bg_color': '#FFC7CE'})
 
     for index, row in ordered_df.iterrows():
@@ -115,7 +136,6 @@ def download_csv(data):
         mime='text/csv'
     )
 
-# Function to generate and download an Excel file
 def download_excel_file(file_path, file_label):
     with open(file_path, "rb") as file:
         file_content = file.read()
