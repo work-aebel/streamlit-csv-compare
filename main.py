@@ -106,7 +106,7 @@ def nonmatching(non_matched_uids,non_matched_uid_fields,df1,df2,csv_b_source,csv
     #conparedf.to_csv('mycsv.csv')
                         
     
-    writer = pd.ExcelWriter('errors.xlsx', engine='xlsxwriter',options={'nan_inf_to_errors': True})
+    writer = pd.ExcelWriter('errors.xlsx', engine='xlsxwriter',engine_kwargs={'options': {'nan_inf_to_errors': True}})
     # Convert the DataFrame to an Excel object
     ordered_df.to_excel(writer, sheet_name='Sheet1', index=False)
 
