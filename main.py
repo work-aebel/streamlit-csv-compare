@@ -68,9 +68,16 @@ def compare_csvs(csv_a, csv_b):
             df2_val = df2_row[col].values
             df1_val = row[col]
 
-            if df2_val == df1_val:
-                pass
-            else:
+            try:
+                if float(df2_val) == float(df1_val):
+                    pass
+                else:
+                    matched = False
+                    if uuid not in non_matched_uid_fields:
+                        non_matched_uid_fields[uuid] = {col:[df1_val,df2_val.item()]}
+                    else:
+                        non_matched_uid_fields[uuid][col] = [df1_val,df2_val.item()]
+            except:
                 matched = False
                 if uuid not in non_matched_uid_fields:
                     non_matched_uid_fields[uuid] = {col:[df1_val,df2_val.item()]}
